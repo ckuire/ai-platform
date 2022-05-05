@@ -1,0 +1,240 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1 class="m-0 text-dark">事件列表</h1>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">现有事件</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body" style="overflow-x:auto;">
+                            <table id="example1" class="table table-striped table-hover" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th style="text-align: center;">任务名称</th>
+                                    <th style="text-align: center;">任务类型</th>
+                                    <th style="text-align: center;">抓拍图</th>
+                                    <th style="text-align: center;">标记抓拍图</th>
+                                    <th style="text-align: center;">标记图</th>
+                                    <th style="text-align: center;">标记详细</th>
+                                    <th style="text-align: center;">时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for event in events %}
+                                    <tr>
+                                        <td style="text-align: center; vertical-align: middle; color:green">{{ event.task_name }}</td>
+                                        <td style="text-align: center; vertical-align: middle; color:green">{{ event.task_type }}</td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+                                            <div data-toggle="modal" data-target="#modal{{ event.id }}snapshot_image">
+                                                <img src="{{ server }}/{{ event.result.type }}/{{ event.result.snapshot_image_path }}" width="50" height="50">
+                                            </div>
+                                            <div class="modal fade" id="modal{{ event.id }}snapshot_image" tabindex="-1" aria-labelledby="example{{ event.id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl">
+                                                    <div class="modal-content">
+                                                        <img src="{{ server }}/{{ event.result.type }}/{{ event.result.snapshot_image_path }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+
+                                            <div data-toggle="modal" data-target="#modal{{ event.id }}snapshot_mark_image">
+                                                <img src="{{ server }}/{{ event.result.type }}/{{ event.result.snapshot_mark_image_path }}" width="50" height="50">
+                                            </div>
+                                            <div class="modal fade" id="modal{{ event.id }}snapshot_mark_image" tabindex="-1" aria-labelledby="example{{ event.id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl">
+                                                    <div class="modal-content">
+                                                        <img src="{{ server }}/{{ event.result.type }}/{{ event.result.snapshot_mark_image_path }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+                                            {% for img in event.result.detect_image_path %}
+                                                <div data-toggle="modal" data-target="#modal{{ event.id }}detail">
+                                                    <img src="{{ server }}/{{ event.result.type }}/{{ img }}" width="50" height="50">
+                                                </div>
+                                                <div class="modal fade" id="modal{{ event.id }}detail" tabindex="-1" aria-labelledby="example{{ event.id }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <img src="{{ server }}/{{ event.result.type }}/{{ img }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+                                            {% for detail in  event.result.detect_detail %}
+                                                <span>{{ detail }}</span><br/>
+                                            {% endfor %}
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">{{ event.create_time|date:'Y-m-d H:i:s' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+
+                            <div class="nav justify-content-end">
+                                <div class="dataTables_paginate paging_simple_numbers" id="example1_paginate">
+                                    <ul class="pagination">
+                                        <li class="paginate_button page-item previous active" id="example1_previous">
+                                            {% if events.has_previous %}
+                                                <a href="/event/{{ events.previous_page_number }}" aria-controls="example1" data-dt-idx="0" tabindex="0" class="page-link">上页</a>
+                                            {% endif %}
+                                        </li>
+                                        <li class="paginate_button page-item disabled">
+                                            <a href="#" aria-controls="example1" data-dt-idx="1" tabindex="0" class="page-link">Page {{ events.number }}</a>
+                                        </li>
+                                        <li class="paginate_button page-item next active" id="example1_next">
+                                            <a href="/event/{{ events.next_page_number }}" class="page-link">下页</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header with-border">
+                            <h3 class="card-title">新增设备</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <div method="post" role="form">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="deviceName">设备名称</label>
+                                    <input type="text" class="form-control" id="deviceName" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="deviceUrl">设备流地址</label>
+                                    <input type="text" class="form-control" id="deviceUrl" placeholder="">
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button class="btn btn-primary" onclick="add_device()">新增</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+{% endblock %}
+
+
+{% block script %}
+    <!-- jQuery 3 -->
+    <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.11.5/datatables.min.js"></script>
+    <!-- FastClick -->
+    <script src="{% static "plugins/fastclick/fastclick.js" %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static "dist/js/adminlte.min.js" %}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static "dist/js/demo.js" %}"></script>
+    <!-- page script -->
+    <script>
+        $(function () {
+            $('#example1').DataTable({
+                "scrollX": false,
+                "autoWidth": true,
+                "paging": false,
+                "lengthChange": false,
+                "language": {
+                    "processing": "处理中...",
+                    "lengthMenu": "显示 _MENU_ 项结果",
+                    "zeroRecords": "没有匹配结果",
+                    "info": "",
+                    "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "search": "搜索:",
+                    "emptyTable": "表中数据为空",
+                    "loadingRecords": "载入中...",
+                    "infoThousands": ",",
+                    "paginate": {
+                        "first": "首页",
+                        "previous": "上页",
+                        "next": "下页",
+                        "last": "末页"
+                    }
+                }
+            });
+        });
+
+
+        function del_device(id) {
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {"deviceId": id, 'optype': 'delete'},
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+
+
+        function add_device() {
+            var deviceName = document.getElementById("deviceName").value;
+            var deviceUrl = document.getElementById("deviceUrl").value;
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {
+                    "deviceName": deviceName,
+                    "deviceUrl": deviceUrl,
+                    'optype': 'add'
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+</body>
+
+</html>

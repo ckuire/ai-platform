@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    <div class="wrapper">
+
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="/tata" class="brand-link logo-switch">
+                <!-- img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                     style="opacity: .8" -->
+                <span class="brand-text logo-xl" style="vertical-align: middle"><b>AI</b>-Platform</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="{% static "dist/img/avatar.png" %}" class="img-circle" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block">KUire</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+                        <li class="nav-item">
+                            <a href="/device" class="nav-link">
+                                <i class="nav-icon fas fa-table"></i>
+                                <p>
+                                    设备列表
+                                    <span class="right fas fa-angle-left"></span>
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/task" class="nav-link">
+                                <i class="nav-icon fas fa-tasks"></i>
+                                <p>
+                                    任务列表
+                                    <span class="right fas fa-angle-left"></span>
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/event/1" class="nav-link">
+                                <i class="nav-icon fas fa-tasks"></i>
+                                <p>
+                                    事件列表
+                                    <span class="right fas fa-angle-left"></span>
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/face" class="nav-link">
+                                <i class="nav-icon fas fa-tasks"></i>
+                                <p>
+                                    人员库
+                                    <span class="right fas fa-angle-left"></span>
+                                </p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+        <!-- /.content-wrapper -->
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-inline">
+                <b>Version</b> 0.2.0
+            </div>
+            <strong>Copyright &copy; 2017-2022 <b>KUire</b>.</strong> All rights reserved.
+        </footer>
+
+        <!-- Control Sidebar -->
+
+        <!-- /.control-sidebar -->
+        <!-- Add the sidebar's background. This div must be placed
+             immediately after the control sidebar -->
+        <div class="sidebar-overlay"></div>
+    </div>
+{% endblock %}
+<!-- ./wrapper -->
+{% block script %}
+    <!-- jQuery -->
+    <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static "dist/js/adminlte.min.js" %}"></script>
+    <!-- page script -->
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1 class="m-0 text-dark">人员库</h1>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">现有人员</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body" style="overflow-x:auto;">
+                            <table id="example1" class="table table-striped table-hover" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th style="text-align: center;">人员名称</th>
+                                    <th style="text-align: center;">人员照片</th>
+                                    <th style="text-align: center;">配置</th>
+                                    <th style="text-align: center;">删除</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for face in faces %}
+                                    <tr>
+                                        <td style="text-align: center; vertical-align: middle; color:green">{{ face.name }}</td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+                                            <div data-toggle="modal" data-target="#modal{{ face.id }}face">
+                                                <img src="{{ server }}/{{ face.url }}" width="50" height="50">
+                                            </div>
+                                            <div class="modal fade" id="modal{{ face.id }}face" tabindex="-1" aria-labelledby="example{{ face.id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl">
+                                                    <div class="modal-content">
+                                                        <img src="{{ server }}/{{ face.url }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle">配置</td>
+                                        <td style="text-align: center; vertical-align: middle; color:#FF9900">
+                                            <button type="button" class="btn btn-danger"
+                                                    onclick="del_face({{ face.id }})">删除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header with-border">
+                            <h3 class="card-title">新增人员</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <div method="post" role="form">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="faceName">人员名称</label>
+                                    <input type="text" class="form-control" id="faceName" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="inputGroupFileAddon">上传人脸</span>
+                                        </div>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="inputGroupFile" aria-describedby="inputGroupFileAddon">
+                                            <label class="custom-file-label" for="inputGroupFile">选择文件</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button class="btn btn-primary" onclick="add_face()">新增</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
+
+
+{% block script %}
+    <!-- jQuery 3 -->
+    <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.11.5/datatables.min.js"></script>
+    <!-- FastClick -->
+    <script src="{% static "plugins/fastclick/fastclick.js" %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static "dist/js/adminlte.min.js" %}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static "dist/js/demo.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <!-- page script -->
+    <script>
+        $(function () {
+            $('#example1').DataTable({
+                "scrollX": false,
+                "autoWidth": true,
+                "language": {
+                    "processing": "处理中...",
+                    "lengthMenu": "显示 _MENU_ 项结果",
+                    "zeroRecords": "没有匹配结果",
+                    "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "search": "搜索:",
+                    "emptyTable": "表中数据为空",
+                    "loadingRecords": "载入中...",
+                    "infoThousands": ",",
+                    "paginate": {
+                        "first": "首页",
+                        "previous": "上页",
+                        "next": "下页",
+                        "last": "末页"
+                    }
+                }
+            });
+
+            bsCustomFileInput.init()
+        });
+
+
+        function del_face(id) {
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {"faceId": id, 'optype': 'delete'},
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+
+
+        function add_face() {
+            var faceName = document.getElementById("faceName").value;
+            var face = document.getElementById("inputGroupFile").files[0];
+            let formData = new FormData()
+            formData.append("faceName", faceName)
+            formData.append("face", face)
+            formData.append("optype", 'add')
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                processData: false,
+                contentType: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: formData,
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+
+        function start_task(id) {
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {
+                    'taskId': id,
+                    'optype': 'start'
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+</body>
+
+</html>

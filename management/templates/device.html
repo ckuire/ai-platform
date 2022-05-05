@@ -1,0 +1,261 @@
+{% extends 'index.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1 class="m-0 text-dark">设备列表</h1>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">现有设备</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body" style="overflow-x:auto;">
+                            <table id="example1" class="table table-striped table-hover" style="width:100%">
+                                <thead>
+                                <tr>
+                                    <th style="text-align: center;">设备名称</th>
+                                    <th style="text-align: center;">设备流地址</th>
+                                    <th style="text-align: center;">设备状态</th>
+                                    <th style="text-align: center;">关联任务</th>
+                                    <th style="text-align: center;">创建时间</th>
+                                    <th style="text-align: center;">配置</th>
+                                    <th style="text-align: center;">删除</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for device in devices %}
+                                    <tr>
+                                        <td data-type="deviceName" style="text-align: center; vertical-align: middle; color:green">{{ device.name }}</td>
+                                        <td data-type="deviceUrl" style="text-align: center; vertical-align: middle; color:#FF9900">{{ device.url }}</td>
+                                        {% if bot.state %}
+                                            <td style="text-align: center; vertical-align: middle"><span style="color: #006400;"><b>在线</b></span></td>
+                                        {% else %}
+                                            <td style="text-align: center; vertical-align: middle"><span style="color: #8b0000;"><b>离线</b></span></td>
+                                        {% endif %}
+                                        <td style="text-align: center; vertical-align: middle; color:#FF0099">暂未实现</td>
+                                        <td style="text-align: center; vertical-align: middle">{{ device.create_time|date:"Y-m-d H:i:s" }}</td>
+                                        <td style="text-align: center; vertical-align: middle">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-device-id="{{ device.id }}" data-target="#toUpdate">
+                                                配置
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-block btn-danger"
+                                                    onclick="del_device({{ device.id }})">删除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            </table>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header with-border">
+                            <h3 class="card-title">新增设备</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <div method="post" role="form">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="deviceName">设备名称</label>
+                                    <input type="text" class="form-control" id="deviceName" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="deviceUrl">设备流地址</label>
+                                    <input type="text" class="form-control" id="deviceUrl" placeholder="">
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+
+                            <div class="card-footer">
+                                <button class="btn btn-primary" onclick="add_device()">新增</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="toUpdate" tabindex="-1" aria-labelledby="toUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">更新设备</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div method="post" role="form">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="deviceName">设备名称</label>
+                                <input type="text" class="form-control" id="updateDeviceName" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label for="deviceUrl">设备流地址</label>
+                                <input type="text" class="form-control" id="updateDeviceUrl" placeholder="">
+                            </div>
+
+                            <input type="text" hidden id="updateDeviceId">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="update_device()">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+
+{% block script %}
+    <!-- jQuery 3 -->
+    <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.11.5/datatables.min.js"></script>
+    <!-- FastClick -->
+    <script src="{% static "plugins/fastclick/fastclick.js" %}"></script>
+    <!-- AdminLTE App -->
+    <script src="{% static "dist/js/adminlte.min.js" %}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{% static "dist/js/demo.js" %}"></script>
+    <!-- page script -->
+    <script>
+        $(function () {
+            $('#example1').DataTable({
+                "scrollX": false,
+                "autoWidth": true,
+                "language": {
+                    "processing": "处理中...",
+                    "lengthMenu": "显示 _MENU_ 项结果",
+                    "zeroRecords": "没有匹配结果",
+                    "info": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                    "infoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                    "infoFiltered": "(由 _MAX_ 项结果过滤)",
+                    "search": "搜索:",
+                    "emptyTable": "表中数据为空",
+                    "loadingRecords": "载入中...",
+                    "infoThousands": ",",
+                    "paginate": {
+                        "first": "首页",
+                        "previous": "上页",
+                        "next": "下页",
+                        "last": "末页"
+                    }
+                }
+            });
+        });
+
+
+        function del_device(id) {
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {"deviceId": id, 'optype': 'delete'},
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert(data.message)
+                    }
+                },
+            });
+        }
+
+        function update_device() {
+            deviceName = $('#updateDeviceName').val()
+            deviceUrl = $('#updateDeviceUrl').val()
+            deviceId = $('#updateDeviceId').val()
+
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {
+                    "deviceId": deviceId,
+                    "deviceName": deviceName,
+                    "deviceUrl": deviceUrl,
+                    'optype': 'update'
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+
+
+        function add_device() {
+            var deviceName = document.getElementById("deviceName").value;
+            var deviceUrl = document.getElementById("deviceUrl").value;
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: false,
+                headers: {'X-CSRFToken': '{{csrf_token}}'},
+                data: {
+                    "deviceName": deviceName,
+                    "deviceUrl": deviceUrl,
+                    'optype': 'add'
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        location.reload();
+                    } else {
+                        alert("error")
+                    }
+                },
+            });
+        }
+
+        $('#toUpdate').on('show.bs.modal', function (event) {
+            currentName = $($(event.relatedTarget).parents('tr')[0]).find('[data-type="deviceName"]').text()
+            currentUrl = $($(event.relatedTarget).parents('tr')[0]).find('[data-type="deviceUrl"]').text()
+            $('#updateDeviceName').val(currentName)
+            $('#updateDeviceUrl').val(currentUrl)
+            $('#updateDeviceId').val($(event.relatedTarget).attr('data-device-id'))
+
+        })
+    </script>
+{% endblock %}
+
+</body>
+
+</html>
